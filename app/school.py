@@ -1,4 +1,5 @@
-import asyncio
+import typing
+from pydantic import BaseModel
 from neispy import Client
 import datetime
 import re
@@ -60,3 +61,14 @@ class School:
         lk = await self.find(da, "석식")
 
         return [lu, lk]
+
+
+class systemModel(BaseModel):
+    code: int
+    message: str
+
+
+class MealResponseModel(BaseModel):
+    status: bool
+    system: systemModel
+    data: typing.List[str]
