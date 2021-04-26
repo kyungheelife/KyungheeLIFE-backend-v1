@@ -2,34 +2,7 @@ import typing
 from aiohttp import ClientSession
 from pydantic import BaseModel
 from .config import W_API_KEY
-
-class ReturnErrorMSG:
-    """
-
-    example:
-        {
-            "status": bool,
-            "system": {
-                "code": int,
-                "message": str
-            },
-            "data": None,
-        }
-    """
-    def __init__(self, status: bool, code: int, message: str) -> None:
-        self.status: bool = status
-        self.http_status_code: int = code
-        self.message: str = message
-
-    def __dict__(self) -> dict:
-        return {
-            "status": self.status,
-            "system": {
-                "code": self.http_status_code,
-                "message": self.message
-            },
-            "data": None,
-        }
+from app import ReturnErrorMSG
 
 
 class Weather:
@@ -39,6 +12,7 @@ class Weather:
     OpenWeatherMap API Warraper.
     .. OpenWeatherMap: https://openweathermap.org/
     """
+
     def __init__(self) -> None:
         self.appId: str = W_API_KEY
         self.api_url: str = "https://api.openweathermap.org/data/2.5/weather"
@@ -48,21 +22,21 @@ class Weather:
             "lang": "kr",
             "appid": self.appId
         }
-    
+
     async def fetch(self) -> dict:
         async with ClientSession() as session:
             async with session.get(url=self.api_url, params=self.query) as resp:
                 if resp.status != 200:
                     return ReturnErrorMSG(
-                        status=False, 
-                        code=resp.status, 
+                        status=False,
+                        code=resp.status,
                         message="[ERROR] OpenWeatherMap API Request Failed."
-                        ).__dict__()
+                    ).__dict__()
 
                 data: dict = await resp.json()
-                    
+
                 main: dict = data.get("main")
-                __weather: list = data.get("weather")            
+                __weather: list = data.get("weather")
                 weather = __weather[0]
 
                 return {
@@ -76,11 +50,12 @@ class Weather:
                         "weather": weather
                     }
                 }
- 
+
 
 class systemModel(BaseModel):
     code: int
     message: str
+
 
 class mainModel(BaseModel):
     temp: float
@@ -90,23 +65,26 @@ class mainModel(BaseModel):
     pressure: int
     humidity: int
 
+
 class weatherModel(BaseModel):
     id: int
     main: str
     description: str
     icon: str
 
+
 class dataModel(BaseModel):
     main: mainModel
     weather: weatherModel
 
-class WheatherResponseModel(BaseModel):
-     status: bool
-     system: systemModel
-     data: typing.Optional[dataModel]
+
+class WhetherResponseModel(BaseModel):
+    status: bool
+    system: systemModel
+    data: typing.Optional[dataModel]
 
 
 __all__ = [
-    "WheatherResponseModel",
+    "WhetherResponseModel",
     "Weather"
 ]
