@@ -22,7 +22,7 @@ class School:
         for bob in meal:
             if bob.get(nt):
                 return bob.get(nt)
-        raise Exception("NEIS API: 해당하는 데이터가 없습니다.")
+        return "해당하는\n데이터가\n없습니다."
 
     async def GetCode(self):
         KST = datetime.timezone(datetime.timedelta(hours=9))
