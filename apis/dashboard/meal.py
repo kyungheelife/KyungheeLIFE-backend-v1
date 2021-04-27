@@ -45,4 +45,4 @@ async def dinner():
             status=False,
             code=500,
             message="[ERROR] NEIS API Request Failed."
-        )
+        ).__dict__()
