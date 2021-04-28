@@ -71,4 +71,4 @@ class systemModel(BaseModel):
 class MealResponseModel(BaseModel):
     status: bool
     system: systemModel
-    data: typing.List[str]
+    data: typing.Optional[typing.List[str]]
