@@ -17,7 +17,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(v1)
 
 if __name__ == '__main__':
-    app.include_router(v1)
     uvicorn.run(app, host="0.0.0.0", port=8074)
