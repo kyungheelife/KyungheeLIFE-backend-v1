@@ -1,4 +1,8 @@
 neispy~=3.2.2
-fastapi~=0.63.0
-uvicorn~=0.13.4
+fastapi~=0.64.0
+uvicorn[standard]~=0.13.4
 starlette~=0.13.6
+cachetools~=4.2.2
+asyncache~=0.1.1
+aiohttp~=3.7.4.post0
+pydantic~=1.8.1

@@ -1,8 +1,9 @@
-import typing
 from aiohttp import ClientSession
-from pydantic import BaseModel
-from .config import W_API_KEY
-from app import ReturnErrorMSG
+from cachetools import TTLCache
+from asyncache import cached
+
+from app.config import W_API_KEY
+from app.modules._error import ReturnErrorMSG
 
 
 class Weather:
@@ -23,6 +24,7 @@ class Weather:
             "appid": self.appId
         }
 
+    @cached(TTLCache(maxsize=2048, ttl=3600))
     async def fetch(self) -> dict:
         async with ClientSession() as session:
             async with session.get(url=self.api_url, params=self.query) as resp:
@@ -52,39 +54,6 @@ class Weather:
                 }
 
 
-class systemModel(BaseModel):
-    code: int
-    message: str
-
-
-class mainModel(BaseModel):
-    temp: float
-    feels_like: float
-    temp_min: float
-    temp_max: float
-    pressure: int
-    humidity: int
-
-
-class weatherModel(BaseModel):
-    id: int
-    main: str
-    description: str
-    icon: str
-
-
-class dataModel(BaseModel):
-    main: mainModel
-    weather: weatherModel
-
-
-class WhetherResponseModel(BaseModel):
-    status: bool
-    system: systemModel
-    data: typing.Optional[dataModel]
-
-
-__all__ = [
-    "WhetherResponseModel",
+__all__ = (
     "Weather"
-]
+)
