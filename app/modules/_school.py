@@ -1,10 +1,9 @@
-import typing
-from pydantic import BaseModel
-from neispy import Client
-import datetime
 import re
-
-from .config import API_KEY
+import datetime
+from neispy import Client
+from cachetools import TTLCache
+from asyncache import cached
+from app.config import API_KEY
 
 
 class School:
@@ -24,6 +23,7 @@ class School:
                 return bob.get(nt)
         return "해당하는\n데이터가\n없습니다."
 
+    @cached(TTLCache(maxsize=2048, ttl=3600))
     async def GetCode(self):
         KST = datetime.timezone(datetime.timedelta(hours=9))
         now = datetime.datetime.now(tz=KST)
@@ -34,6 +34,7 @@ class School:
         SE: str = sc_info[0]["SD_SCHUL_CODE"]
         return [AE, SE, YMD]
 
+    @cached(TTLCache(maxsize=2048, ttl=3600))
     async def fetch_meal(self):
         AE, SE, YMD = await self.GetCode()
         _meal = await self.neis.mealServiceDietInfo(AE, SE, MLSV_YMD=YMD)
@@ -61,14 +62,3 @@ class School:
         lk = await self.find(da, "석식")
 
         return [lu, lk]
-
-
-class systemModel(BaseModel):
-    code: int
-    message: str
-
-
-class MealResponseModel(BaseModel):
-    status: bool
-    system: systemModel
-    data: typing.Optional[typing.List[str]]
