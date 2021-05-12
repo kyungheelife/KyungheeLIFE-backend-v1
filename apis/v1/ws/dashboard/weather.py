@@ -11,7 +11,7 @@ from app.modules import ReturnErrorMSG
 weather_route = APIRouter()
 
 
-@weather_route.websocket_route('/openweathermap')
+@weather_route.websocket_route('/openweathermap/')
 async def openweathermap_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:

@@ -39,7 +39,7 @@ async def lunch(websocket: WebSocket):
         manager.disconnect(websocket)
 
 
-@school_route.websocket_route("/dinner")
+@school_route.websocket_route("/dinner/")
 async def dinner(websocket: WebSocket):
     await manager.connect(websocket)
     try:
