@@ -23,8 +23,8 @@ async def covid_total(websocket: WebSocket):
                 await manager.broadcast(message=res)
             except Exception as e:
                 print("error:", e)
-                break
+                continue
     except WebSocketDisconnect as e:
-        manager.disconnect(websocket)
+        # manager.disconnect(websocket)
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
