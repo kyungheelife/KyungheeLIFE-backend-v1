@@ -9,7 +9,7 @@ from app.manager import manager
 covid_route = APIRouter()
 
 
-@covid_route.websocket_route("/total")
+@covid_route.websocket_route("/total/")
 async def covid_total(websocket: WebSocket):
     await manager.connect(websocket)
     try:
