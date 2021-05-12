@@ -1,4 +1,3 @@
-from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.controllers import KHSBackend
@@ -26,5 +25,4 @@ core.app.add_middleware(
 
 if __name__ == '__main__':
     core.app.include_router(v1)
-    core.app.mount("/", StaticFiles(directory="public/"))
     core.start()
