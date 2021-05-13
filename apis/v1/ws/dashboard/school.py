@@ -21,18 +21,19 @@ async def lunch(websocket: WebSocket):
                 if resp.get("message") != "ping":
                     break
                 nx = await sc.fetch_meal()
+                data = nx[0].split()
                 res = {
                     "status": True,
                     "system": {
                         "code": 200,
                         "message": "OK"
                     },
-                    "data": [*nx[0].split()]
+                    "data": [*data]
                 }
                 await manager.broadcast(message=res)
             except Exception as e:
                 print("error:", e)
-                continue
+                break
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
@@ -50,18 +51,19 @@ async def dinner(websocket: WebSocket):
                 if resp.get("message") != "ping":
                     break
                 nx = await sc.fetch_meal()
+                data = nx[1].split()
                 res = {
                     "status": True,
                     "system": {
                         "code": 200,
                         "message": "OK"
                     },
-                    "data": [*nx[1].split()]
+                    "data": [*data]
                 }
                 await manager.broadcast(message=res)
             except Exception as e:
                 print("error:", e)
-                continue
+                break
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)

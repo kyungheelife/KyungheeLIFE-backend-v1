@@ -25,7 +25,7 @@ async def openweathermap_endpoint(websocket: WebSocket):
                 await manager.broadcast(message=res)
             except Exception as e:
                 print("error: ", e)
-                continue
+                break
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
