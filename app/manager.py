@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 from starlette.websockets import WebSocket
 
@@ -15,7 +14,6 @@ class ConnectionManager:
         self.active_connections.remove(websocket)
 
     async def broadcast(self, message: dict):
-        await asyncio.sleep(delay=0.1)
         [await connection.send_json(message) for connection in self.active_connections]
 
     @staticmethod
