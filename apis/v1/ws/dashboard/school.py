@@ -10,7 +10,7 @@ from app.manager import manager
 school_route = APIRouter()
 
 
-@school_route.websocket_route("/lunch/")
+@school_route.websocket_route("/lunch")
 async def lunch(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -36,10 +36,10 @@ async def lunch(websocket: WebSocket):
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
-        # manager.disconnect(websocket)
+        manager.disconnect(websocket)
 
 
-@school_route.websocket_route("/dinner/")
+@school_route.websocket_route("/dinner")
 async def dinner(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -65,4 +65,4 @@ async def dinner(websocket: WebSocket):
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
-        # manager.disconnect(websocket)
+        manager.disconnect(websocket)
