@@ -11,7 +11,7 @@ from app.modules import ReturnErrorMSG
 weather_route = APIRouter()
 
 
-@weather_route.websocket_route('/openweathermap/')
+@weather_route.websocket_route('/openweathermap')
 async def openweathermap_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -29,4 +29,4 @@ async def openweathermap_endpoint(websocket: WebSocket):
     except WebSocketDisconnect as e:
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
-        # manager.disconnect(websocket)
+        manager.disconnect(websocket)

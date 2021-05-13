@@ -9,7 +9,7 @@ from app.manager import manager
 covid_route = APIRouter()
 
 
-@covid_route.websocket_route("/total/")
+@covid_route.websocket_route("/total")
 async def covid_total(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -25,6 +25,6 @@ async def covid_total(websocket: WebSocket):
                 print("error:", e)
                 continue
     except WebSocketDisconnect as e:
-        # manager.disconnect(websocket)
         msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
         await manager.broadcast(message=msg)
+        manager.disconnect(websocket)
