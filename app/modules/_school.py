@@ -1,17 +1,17 @@
 import re
 import datetime
 from neispy import Client
-from cachetools import TTLCache
+from cachetools import TTLCache, LRUCache
 from asyncache import cached
 from app.config import API_KEY
 
 
 class School:
-    def __init__(self):
+    def __init__(self) -> None:
         self.neis = Client(KEY=API_KEY)
 
     @staticmethod
-    async def find(meal, nt):
+    async def find(meal, nt) -> str:
         """급식 찾기
 
         :param meal: original data
@@ -23,8 +23,7 @@ class School:
                 return bob.get(nt)
         return "해당하는\n데이터가\n없습니다."
 
-    @cached(TTLCache(maxsize=2048, ttl=3600))
-    async def GetCode(self):
+    async def GetCode(self) -> list:
         KST = datetime.timezone(datetime.timedelta(hours=9))
         now = datetime.datetime.now(tz=KST)
         YMD = now.strftime("%Y%m%d")
@@ -35,7 +34,7 @@ class School:
         return [AE, SE, YMD]
 
     @cached(TTLCache(maxsize=2048, ttl=3600))
-    async def fetch_meal(self):
+    async def fetch_meal(self) -> list:
         AE, SE, YMD = await self.GetCode()
         _meal = await self.neis.mealServiceDietInfo(AE, SE, MLSV_YMD=YMD)
         da = []
@@ -58,7 +57,14 @@ class School:
                     )
                 }
             )
-        lu = await self.find(da, "중식")
-        lk = await self.find(da, "석식")
+        return da
 
-        return [lu, lk]
+    async def fetchLunch(self) -> str:
+        data = await self.fetch_meal()
+        rep = await self.find(data, "중식")
+        return rep
+
+    async def fetchDinner(self) -> str:
+        data = await self.fetch_meal()
+        rep = await self.find(data, "석식")
+        return rep

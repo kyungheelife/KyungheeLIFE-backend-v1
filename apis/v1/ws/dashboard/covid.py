@@ -4,28 +4,30 @@ from starlette.websockets import WebSocket
 from starlette.websockets import WebSocketDisconnect
 from app.modules import CovidStats
 from app.modules import ReturnErrorMSG
-from app.manager import manager
+from app.manager import ConnectionManager
 
 covid_route = APIRouter()
 
 
 @covid_route.websocket_route("/total")
 async def covid_total(websocket: WebSocket):
-    await manager.connect(websocket)
     try:
         c = CovidStats()
-        while 1:
+        async with ConnectionManager(websocket=websocket) as ex:
             try:
-                resp = await websocket.receive_json()
-                if resp.get("message") != "ping":
-                    break
-                res = await c.ROKTotals()
-                await manager.broadcast(message=res)
-            except Exception as e:
-                print("error:", e)
-                break
+                while 1:
+                    try:
+                        resp = await websocket.receive_json()
+                        if resp.get("message") != "ping":
+                            break
+                        res = await c.ROKTotals()
+                        await ex.broadcast(message=res)
+                    except Exception as e:
+                        print("error:", e)
+                        break
 
-    except WebSocketDisconnect as e:
-        msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
-        await manager.broadcast(message=msg)
-        manager.disconnect(websocket)
+            except WebSocketDisconnect as e:
+                msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
+                await ex.broadcast(message=msg)
+    except Exception as a:
+        print("error:", a)
