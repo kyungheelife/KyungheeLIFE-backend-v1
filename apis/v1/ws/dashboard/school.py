@@ -22,7 +22,7 @@ async def lunch(websocket: WebSocket):
                     if resp.get("message") != "ping":
                         break
                     nx = await sc.fetchLunch()
-                    data = nx.strip()
+                    data = nx.split()
                     res = {
                         "status": True,
                         "system": {
@@ -51,7 +51,7 @@ async def dinner(websocket: WebSocket):
                     if resp.get("message") != "ping":
                         break
                     nx = await sc.fetchDinner()
-                    data = nx.strip()
+                    data = nx.split()
                     res = {
                         "status": True,
                         "system": {
