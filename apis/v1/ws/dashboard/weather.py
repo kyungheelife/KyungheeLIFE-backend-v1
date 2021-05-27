@@ -6,16 +6,16 @@ from starlette.websockets import WebSocketDisconnect
 from app.manager import ConnectionManager
 from app.modules import Weather
 from app.modules import ReturnErrorMSG
-
+from app.services import timestamp
 
 weather_route = APIRouter()
 
 
 @weather_route.websocket_route('/openweathermap')
 async def openweathermap_endpoint(websocket: WebSocket):
-    try:
-        source = Weather()
-        async with ConnectionManager(websocket=websocket) as ex:
+    async with ConnectionManager(websocket=websocket) as ex:
+        try:
+            source = Weather()
             try:
                 while 1:
                     try:
@@ -23,12 +23,39 @@ async def openweathermap_endpoint(websocket: WebSocket):
                         if resp.get("message") != "ping":
                             break
                         res = await source.fetch()
+                        res.update({"timestamp": timestamp()})
                         await ex.broadcast(message=res)
                     except Exception as e:
-                        print("error: ", e)
+                        print(f"[ERROR]: [{e}]")
+                        await ex.broadcast(
+                            message=dict(
+                                ReturnErrorMSG(
+                                    status=False,
+                                    code=500,
+                                    message="[ERROR] Internal Server Error"
+                                ).__dict__
+                            )
+                        )
                         break
             except WebSocketDisconnect as e:
-                msg = ReturnErrorMSG(status=False, code=e.code, message=f"Disconnected!").__dict__()
-                await ex.broadcast(message=msg)
-    except Exception as a:
-        print("error:", a)
+                print(f"[ERROR]: [{e}]")
+                await ex.broadcast(
+                    message=dict(
+                        ReturnErrorMSG(
+                            status=False,
+                            code=e.code,
+                            message="Disconnected!"
+                        ).__dict__
+                    )
+                )
+        except Exception as e:
+            print(f"[ERROR]: [{e}]")
+            await ex.broadcast(
+                message=dict(
+                    ReturnErrorMSG(
+                        status=False,
+                        code=500,
+                        message="[ERROR] Internal Server Error"
+                    ).__dict__
+                )
+            )

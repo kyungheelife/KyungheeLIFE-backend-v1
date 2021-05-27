@@ -24,16 +24,16 @@ class Weather:
             "appid": self.appId
         }
 
-    @cached(TTLCache(maxsize=2048, ttl=3600))
-    async def fetch(self) -> dict:
+    @cached(TTLCache(maxsize=120, ttl=3600))
+    async def fetch(self):
         async with ClientSession() as session:
             async with session.get(url=self.api_url, params=self.query) as resp:
                 if resp.status != 200:
-                    return ReturnErrorMSG(
+                    return dict(ReturnErrorMSG(
                         status=False,
                         code=resp.status,
                         message="[ERROR] OpenWeatherMap API Request Failed."
-                    ).__dict__()
+                    ).__dict__)
 
                 data: dict = await resp.json()
 

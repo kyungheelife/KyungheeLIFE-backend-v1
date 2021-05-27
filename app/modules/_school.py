@@ -1,7 +1,7 @@
 import re
 import datetime
 from neispy import Client
-from cachetools import TTLCache, LRUCache
+from cachetools import TTLCache
 from asyncache import cached
 from app.config import API_KEY
 
@@ -33,7 +33,6 @@ class School:
         SE: str = sc_info[0]["SD_SCHUL_CODE"]
         return [AE, SE, YMD]
 
-    @cached(TTLCache(maxsize=2048, ttl=3600))
     async def fetch_meal(self) -> list:
         AE, SE, YMD = await self.GetCode()
         _meal = await self.neis.mealServiceDietInfo(AE, SE, MLSV_YMD=YMD)
@@ -59,11 +58,13 @@ class School:
             )
         return da
 
+    @cached(TTLCache(maxsize=120, ttl=3600))
     async def fetchLunch(self) -> str:
         data = await self.fetch_meal()
         rep = await self.find(data, "중식")
         return rep
 
+    @cached(TTLCache(maxsize=120, ttl=3600))
     async def fetchDinner(self) -> str:
         data = await self.fetch_meal()
         rep = await self.find(data, "석식")
