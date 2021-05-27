@@ -1,7 +1,10 @@
+from app.services import timestamp
+
+
 class ReturnErrorMSG:
     """
 
-    example:
+    result:
         {
             "status": bool,
             "system": {
@@ -12,17 +15,14 @@ class ReturnErrorMSG:
         }
     """
     def __init__(self, status: bool, code: int, message: str) -> None:
-        self.status: bool = status
-        self.http_status_code: int = code
-        self.message: str = message
-
-    def __dict__(self) -> dict:
-        return {
-            "status": self.status,
-            "system": {
-                "code": self.http_status_code,
-                "message": self.message
-            },
-            "data": None,
-        }
-
+        self.__dict__.update(
+            {
+                "status": status,
+                "system": {
+                    "code": code,
+                    "message": message
+                },
+                "data": None,
+                "timestamp": timestamp()
+            }
+        )

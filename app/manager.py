@@ -12,7 +12,7 @@ class ConnectionManager:
         return self
 
     async def __aexit__(self, type, value, traceback):
-        # print(f"{type}:{value}:{traceback}")
+        print(f"[{type}]:[{value}]:[{traceback}]")
         await self._disconnect()
 
     async def _connect(self, websocket: WebSocket):
@@ -28,10 +28,6 @@ class ConnectionManager:
     async def ping(self):
         resp = await self._websocket.receive_json()
         return resp
-
-    @staticmethod
-    async def send_personal_message(websocket: WebSocket, message: dict,):
-        await websocket.send_json(message)
 
 
 __all__ = (

@@ -10,7 +10,7 @@ class CovidStats:
         self.API_KEY = COVID_API_KEY
         self.api_url = "http://127.0.0.1:8899/api/v3/"
 
-    @cached(TTLCache(maxsize=2048, ttl=3600))
+    @cached(TTLCache(maxsize=120, ttl=3600))
     async def ROKTotals(self):
         url = self.api_url + "kr/total"
         async with ClientSession() as session:
@@ -19,10 +19,10 @@ class CovidStats:
                     if resp.status != 200:
                         if resp.status != 500:
                             return resp.json()
-                        return ReturnErrorMSG(status=False, code=resp.status, message="ERROR").__dict__()
+                        return dict(ReturnErrorMSG(status=False, code=resp.status, message="ERROR").__dict__)
                     response = await resp.json()
-            except Exception:
-                return ReturnErrorMSG(status=False, code=500, message="Internal Server Error").__dict__()
-
+            except Exception as e:
+                print(f"[ERROR]: [{e}]")
+                return dict(ReturnErrorMSG(status=False, code=500, message="Internal Server Error").__dict__)
             return response
 
