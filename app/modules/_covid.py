@@ -1,8 +1,6 @@
 from aiohttp import ClientSession
 from app.modules._error import ReturnErrorMSG
 from app.config import COVID_API_KEY
-from cachetools import TTLCache
-from asyncache import cached
 
 
 class CovidStats:
@@ -10,7 +8,6 @@ class CovidStats:
         self.API_KEY = COVID_API_KEY
         self.api_url = "http://127.0.0.1:8899/api/v3/"
 
-    @cached(TTLCache(maxsize=120, ttl=3600))
     async def ROKTotals(self):
         url = self.api_url + "kr/total"
         async with ClientSession() as session:

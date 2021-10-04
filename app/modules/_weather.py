@@ -1,7 +1,4 @@
 from aiohttp import ClientSession
-from cachetools import TTLCache
-from asyncache import cached
-
 from app.config import W_API_KEY
 from app.modules._error import ReturnErrorMSG
 
@@ -24,7 +21,6 @@ class Weather:
             "appid": self.appId
         }
 
-    @cached(TTLCache(maxsize=120, ttl=3600))
     async def fetch(self):
         async with ClientSession() as session:
             async with session.get(url=self.api_url, params=self.query) as resp:
